@@ -2,43 +2,51 @@ import random
 import math
 
 class GA1:
-	puzzleSize = 5
+	puzzleSize = 5 #Dimension of puzzle, nxn
 	popSize = 100
 	mutationRate = .01
 	
+	logic = [] #[m1,n1,m2,n2] representation 1>2 
+	staticNums = []
+	
 	population = []
 	fitness = []
+	
 
 	
 	def populate(self, firstGen = 0):
 		nextGen = []
-		if firstGen:
+		if firstGen: #Generates random population if first generation
 			for i in range(self.popSize):
 				child = []
 				for m in range(self.puzzleSize):
 					row = []
 					for n in range(self.puzzleSize):
 						row.append(random.randint(1,self.puzzleSize))
-					child.append(tuple(row))
-				nextGen.append(tuple(child))
-		else:
+					child.append(row)
+				for nums in self.staticNums:
+					child[nums[0]][nums[1]] = nums[2]
+				nextGen.append(child)
+		else: #This is the real populate function
 			for i in range(self.popSize):
 				if i:
-					parent1 = self.rouletteWheel()
+					parent1 = self.rouletteWheel() #Selects two parents through roulette wheel
 					parent2 = self.rouletteWheel()
 					child = []
-					for m in range(self.puzzleSize):
+					for m in range(self.puzzleSize): #Iterates through all genes for crossover
 						row = []
 						for n in range(self.puzzleSize):
-							if random.rand() < .5:
+							if random.rand() < .5: #50% crossover rate
 								row.append(parent1[m,n])
 							else:
 								row.append(parent2[m,n])
 							
-							if random.rand() < mutationRate:
+							if random.rand() < mutationRate: #if mutation occurs insert random value at gene
 								row[n] = random.randint(1,self.puzzleSize)
-						child.append(tuple(row))
-					nextGen.append(tuple(child))
+						child.append(row)
+					for nums in self.staticNums:
+						child[nums[0]][nums[1]] = nums[2]
+					nextGen.append(child)
 					
 				else:
 					nextGen.append(self.population[self.fitness.index(max(self.fitness))])
@@ -46,16 +54,29 @@ class GA1:
 		self.evalFitness()
 	
 	def evalFitness(self):
-		self.fitness = []
+		self.fitness = [] #Initializes fitness array
 		for animal in self.population:
-			x = animal[0]/self.uniqueVals * (self.xbounds[1]-self.xbounds[0]) + self.xbounds[0]
-			y = animal[1]/self.uniqueVals * (self.ybounds[1]-self.ybounds[0]) + self.ybounds[0]
-			z = (pow(x,2) - 10 * math.cos(2 * math.pi * x)) + (pow(y,2) - 10 * math.cos(2 * math.pi * y)) + 20
-			if not z:
-				z = .0000000001
-			self.fitness.append(1/z)
+			currFit = 0
+			
+			for i in range(self.puzzleSize): #Gives worse fitness scores to members that have repeating elements in rows or columns
+				rowNums,rowNums = [0]*self.puzzleSize, 
+				
+				for element in animal[i]:
+					rowNums[element-1] += 1
+				for element in rowNums:
+					currFit += abs(element-1)
+			
+				for element in [row[i] for row in animal]:
+					colNums[element-1] += 1
+				for element in colNums:
+					currFit += abs(element-1)
+					
+			for i in self.logic: #Gives worse fitness score for members that fail logic requirements
+				if not animal[i[0]][i[1]] > animal[i[2]][i[3]]:
+					currFit += 10
+			self.fitness.append(1/currFit)
 	
-	def rouletteWheel(self):
+	def rouletteWheel(self): #Returns a member of the population with weighted average determined by fitness array
 		max = sum(self.fitness)
 		choice = random.uniform(0,max)
 		index = 0
