@@ -1,8 +1,8 @@
 import random
 import math
 
-class GA1:
-	puzzleSize = 5 #Dimension of puzzle, nxn
+class GA2:
+	puzzleSize = 3 #Dimension of puzzle, nxn
 	popSize = 100
 	mutationRate = .01
 	
@@ -14,7 +14,7 @@ class GA1:
 	
 
 	
-	def populate(self, firstGen = 0):
+	def populate(self, firstGen = 0): #First generation if firstGen is true
 		nextGen = []
 		if firstGen: #Generates random population if first generation
 			for i in range(self.popSize):
@@ -36,14 +36,15 @@ class GA1:
 					for m in range(self.puzzleSize): #Iterates through all genes for crossover
 						row = []
 						for n in range(self.puzzleSize):
-							if random.rand() < .5: #50% crossover rate
-								row.append(parent1[m,n])
+							if random.random() < .5: #50% crossover rate
+								row.append(parent1[m][n])
 							else:
-								row.append(parent2[m,n])
+								row.append(parent2[m][n])
 							
-							if random.rand() < mutationRate: #if mutation occurs insert random value at gene
+							if random.random() < self.mutationRate: #if mutation occurs insert random value at gene
 								row[n] = random.randint(1,self.puzzleSize)
 						child.append(row)
+						
 					for nums in self.staticNums:
 						child[nums[0]][nums[1]] = nums[2]
 					nextGen.append(child)
@@ -59,7 +60,7 @@ class GA1:
 			currFit = 0
 			
 			for i in range(self.puzzleSize): #Gives worse fitness scores to members that have repeating elements in rows or columns
-				rowNums,rowNums = [0]*self.puzzleSize, 
+				rowNums,colNums = [0]*self.puzzleSize,[0]*self.puzzleSize
 				
 				for element in animal[i]:
 					rowNums[element-1] += 1
@@ -74,6 +75,9 @@ class GA1:
 			for i in self.logic: #Gives worse fitness score for members that fail logic requirements
 				if not animal[i[0]][i[1]] > animal[i[2]][i[3]]:
 					currFit += 10
+			
+			if not currFit:
+				currFit = .1
 			self.fitness.append(1/currFit)
 	
 	def rouletteWheel(self): #Returns a member of the population with weighted average determined by fitness array
