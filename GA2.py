@@ -51,8 +51,23 @@ class GA2:
 					
 				else:
 					nextGen.append(self.population[self.fitness.index(max(self.fitness))])
+		lastGen = self.population
+		lastFit = self.fitness
 		self.population = nextGen
 		self.evalFitness()
+		selectionPool = lastGen + self.population
+		selectionFit = lastFit + self.fitness
+		nextPop = []
+		nextFit = []
+		selectionFit.sort(reverse = True)
+		for i in range(self.popSize):
+			fit = selectionFit[i]
+			nextFit.append(fit)
+			nextPop.append(selectionPool[selectionFit.index(fit)])
+			
+		
+	
+		
 	
 	def evalFitness(self):
 		self.fitness = [] #Initializes fitness array
