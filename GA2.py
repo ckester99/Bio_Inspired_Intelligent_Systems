@@ -51,21 +51,26 @@ class GA2:
 					
 				else:
 					nextGen.append(self.population[self.fitness.index(max(self.fitness))])
-		lastGen = self.population
-		lastFit = self.fitness
 		self.population = nextGen
 		self.evalFitness()
-		selectionPool = lastGen + self.population
+		"""
+		lastGen = self.population.copy()
+		lastFit = self.fitness.copy()
+		self.population = nextGen
+		self.evalFitness()
+		selectionPool = lastGen.extendself.population
 		selectionFit = lastFit + self.fitness
 		nextPop = []
 		nextFit = []
 		selectionFit.sort(reverse = True)
+		
 		for i in range(self.popSize):
 			fit = selectionFit[i]
 			nextFit.append(fit)
 			nextPop.append(selectionPool[selectionFit.index(fit)])
-			
-		
+		self.population = nextPop
+		self.fitness = nextFit
+		"""
 	
 		
 	
