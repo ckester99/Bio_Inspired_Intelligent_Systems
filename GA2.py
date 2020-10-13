@@ -27,6 +27,8 @@ class GA2:
 				for nums in self.staticNums:
 					child[nums[0]][nums[1]] = nums[2]
 				nextGen.append(child)
+				self.population = nextGen
+				self.evalFitness()
 		else: #This is the real populate function
 			for i in range(self.popSize):
 				if i:
@@ -52,20 +54,23 @@ class GA2:
 				else:
 					nextGen.append(self.population[self.fitness.index(max(self.fitness))])
 
-		selectionPool = self.population + nextGen
-		selectionFit = self.fitness.copy()
-		self.population = nextGen
-		self.evalFitness()
-		linkedSelection = list(zip(selectionFit + self.fitness,selectionPool))
-		linkedSelection.sort(reverse = True)
+			self.population = nextGen;
+			self.evalFitness()
+			""" adding parents to selection pool
+			selectionPool = self.population + nextGen
+			selectionFit = self.fitness.copy()
+			self.population = nextGen
+			self.evalFitness()
+			linkedSelection = list(zip(selectionFit + self.fitness,selectionPool))
+			linkedSelection.sort(reverse = True)
 		
-		nextGen,nextFit = [],[]
-		for i in range(self.popSize):
-			nextGen.append(linkedSelection[i][1])
-			nextFit.append(linkedSelection[i][0])
-		self.population = nextGen
-		self.fitness = nextFit
-	
+			nextGen,nextFit = [],[]
+			for i in range(self.popSize):
+				nextGen.append(linkedSelection[i][1])
+				nextFit.append(linkedSelection[i][0])
+			self.population = nextGen
+			self.fitness = nextFit
+			"""
 	def evalFitness(self):
 		self.fitness = [] #Initializes fitness array
 		for animal in self.population:
